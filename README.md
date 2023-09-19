@@ -38,9 +38,6 @@ Before running the application, ensure you have the following installed:
 
   5. **Install the required dependencies**:
 
-      ```bash
-      Copy code
-      pip install -r requirements.txt
   6. **Initialize the SQLite database**:
 
       ```bash
