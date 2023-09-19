@@ -48,5 +48,4 @@ Before running the application, ensure you have the following installed:
   7. **Run the application**:
 
       ```bash
-      Copy code
       python app.py
