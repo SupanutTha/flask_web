@@ -5,15 +5,18 @@ from flask_login import UserMixin, LoginManager, login_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 from flask_login import logout_user
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
+from flask import flash
 
 
 secret_key = os.urandom(24)
 print(secret_key)
 
-
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///book.db'
 db = SQLAlchemy(app)
+admin = Admin(app, name='My Admin', template_mode='bootstrap3')
 
 # login instance
 login_manager = LoginManager()
@@ -47,7 +50,22 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
         return f'<User {self.username}>'
+class UserView(ModelView):
+    column_list = ('username', 'email')  # List of columns to display
+    column_searchable_list = ('username', 'email')  # Add columns you want to search
+    column_filters = ('username', 'email')  # Add filters for columns
+    form_columns = ('username', 'email', 'password')  # Form fields for adding/editing
 
+admin.add_view(UserView(User, db.session))
+
+class BookView(ModelView):
+    column_list = ('title', 'author', 'published', 'pages','image')  # List of columns to display
+    column_searchable_list = ('title', 'author')  # Add columns you want to search
+    column_filters = ('published', 'pages')  # Add filters for columns
+    form_columns = ('title', 'subtitle', 'author', 'published', 'publisher', 'pages', 'description', 'website', 'image')  # Form fields for adding/editing
+    can_export = True  # Allow exporting to CSV/Excel
+
+admin.add_view(BookView(Book, db.session))
 
 def import_books_from_json(json_filename):
     print(json_filename)
@@ -95,7 +113,6 @@ def import_books_from_json(json_filename):
         # Commit the transaction to save the new books to the database
         db.session.commit()
 
-
 @app.before_first_request
 def before_first_request():
     db.create_all()
@@ -105,8 +122,6 @@ def before_first_request():
 @app.route('/', methods=['GET', 'POST'])
 def home():
     # import_books_from_json('static/json/database.json')
-    print(request.method)
-    print(request.form)
     if request.method == 'POST' and 'register' in request.form:
         # Handle user registration form submission
         username = request.form['username']
@@ -134,7 +149,6 @@ def home():
             flash('Login successful.', 'success')
         else:
             flash('Login failed. Please check your username and password.', 'danger')
-
 
     elif request.method == 'POST':
         logout_user()

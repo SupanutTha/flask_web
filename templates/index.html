@@ -64,6 +64,26 @@
 			.card button:hover {
 				opacity: 0.7;
 			}
+			.flash-messages {
+				color: #ff0000;
+				position: fixed;
+				top: 10;
+				right: 0; /* Align to the right */
+				margin: 20px; /* Add margin for spacing */
+				padding: 10px; /* Add padding for better readability */
+				background-color: #ffffff; /* Background color for the flash messages container */
+				box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); /* Add a shadow for a visual effect */
+				z-index: 1000; /* Ensure it's above other page elements */
+			}
+
+			.flash-messages ul {
+				list-style-type: none;
+				padding: 0;
+			}
+
+			.flash-messages div {
+				margin: 5px 0;
+			}
 			
 		</style>
 	
@@ -86,7 +106,7 @@
 							</li>
 						{% else %}
 						<li>
-							<form method="post" action="/">
+							<form method="post" action="">
 								<input type="hidden" name="login" value="1"> <!-- Add this hidden field -->
 								<li><input type="text" name="username" placeholder="Username" required/></li>
 								<li><input type="password" name="password" placeholder="password" required/></li>
@@ -97,8 +117,19 @@
 						{% endif %}
 					</ul>
 				</nav>
+			
 			</header>
-
+			<div id="flash-messages">
+				{% with messages = get_flashed_messages() %}
+					{% if messages %}
+						<ul>
+							{% for message in messages %}
+								<div style="align-self: end;">{{   message }}</div>
+							{% endfor %}
+						</ul>
+					{% endif %}
+				{% endwith %}
+			</div>
 		<!-- Intro -->
 			<section id="intro" class="main style1 dark fullscreen">
 				<div class="content">
@@ -194,6 +225,5 @@
 			<script src="static/js/breakpoints.min.js"></script>
 			<script src="static/js/util.js"></script>
 			<script src="static/js/main.js"></script>
-
 	</body>
 </html>
